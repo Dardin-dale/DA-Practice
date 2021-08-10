@@ -96,11 +96,45 @@ function rotateInPlace (matrix) {
 //1.8 - Zero Matrix: Write an algorithm such that if an element in an MxN matrix is 0, 
 //its entire row and column are set to O. 
 
-matrix1 = [[],[]];
+matrix1 = [[1,1,1,1,1],[1,1,1,0,1],[1,1,1,1,1]]; // => [[1,1,1,0,1],[0,0,0,0,0],[1,1,1,0,1]]
 
+//First pass ignoring invalid cases.
 function zeroMatrix (matrix) {
+    //pass through keep track of rows and cols to zero.
+    let rows = {};
+    let cols = {};
+    //hunt
+    for (let i = 0; i<matrix.length; i++){
+        for(let j=0; j<matrix[i].length; j++){
+            if(matrix[i][j] === 0){
+                if(rows[i]){
+                    if(!cols[j]){
+                        cols[j] = true;
+                    }  
+                } else {
+                    rows[i] = true;
+                    cols[j] = true;
+                }
+            }
+        }
+    }
 
+    //Zero Rows
+    for(row in rows){
+        matrix[row] = matrix[row].map(x => 0);
+    }
+    //Zero Cols
+    for (let i=0; i<matrix.length; i++) {
+        if(rows[i]) { continue; }
+        for(col in cols){
+            matrix[i][col] = 0;
+        }
+    }
+
+    return matrix
 }
+
+console.log(zeroMatrix(matrix1));
 
 //1.9 - String Rotation: Assume you have a method isSubstring which checks if one word is a substring of another. 
 //Given two strings, s1 and s2, 
