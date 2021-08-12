@@ -233,12 +233,73 @@ function tailAndLength(list){
     return [current, size];
 }
 
+function choplisthelper(node, num){
+    let current = node;
+    for(var i = 0; i < num; i++){
+        current = current.next;
+    }
+    return current;
+}
+
 function intersectHarder(list1, list2){
     let tails1 = tailAndLength(list1);
     let tails2 = tailAndLength(list2);
     if(tails1[0] !== tails2[0]) return false;
 
     //compare lengths and chop longer one.
-
+    let difference = Math.abs(tails1[1]-tails2[1]);
+    let l1 = list1;
+    let l2 = list2;
+    if(tails1[1] > tails2[1]){
+        l1 = choplisthelper(list1, difference);
+    } else if(tails2[1] > tails1[1]){
+        l2 = choplisthelper(list2, difference);
+    }
     //iterate both until nodes collide and return
+    while(l1 && l2){
+        if(l1 === l2){
+            break;
+        }
+        l1 = l1.next;
+        l2 = l2.next;
+    }
+    return l1;
+}
+
+
+/**
+ * list detection trivial solution = throw everything in a visit list hashmap  
+ *
+ * two pointers going to 
+ */
+
+// two pointers
+function detectLoop(list) {
+    let slow = list;
+    let fast = list.next;
+
+    //see if pointers collide;
+    while(fast && fast.next){
+        fast = fast.next.next;
+        slow = slow.next;
+        if(fast === slow){
+            break;
+        }
+    }
+
+    //error out
+    if(!fast || !fast.next){
+        return null;
+    }
+
+    //points are collided
+    //move point to head the next collision will be the start of the loop
+    slow = list;
+    while(fast !== slow){
+        slow = slow.next;
+        fast = fast.next;
+    }
+
+    return slow;
+
 }
