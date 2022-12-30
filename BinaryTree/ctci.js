@@ -221,27 +221,35 @@ function isEqual(node1, node2) {
 
 
 /**
- * 
- * @param {*} head 
+ * recurse to find all possible list combinations
+ * @param {LinkedList} left - 
+ * @param {LinkedList} right -
+ * @param {Array<LinkedList>} list - result of weaves adjusted via recursed calls
+ * @param {*} prefix - LinkedList with adjustable 
  */
-function preOrderArrays(head, arrR = [], arrL = []) {
-    if (!head) return [arrR, arrL];
-    let left = [];
-    let right = [];
-    arrR.push(curr);
-    arrL.push(curr);
-    if(curr.left) {
-        left = preOrderArrays(curr.left, arrR, arrL)
-    }
-    if(curr.right) {
-        right = preOrderArrays(curr.right, arrR, arrL)
+function weave(left, right, list, prefix) {
+    //empty list return results
+    if(left.length == 0 || right.length == 0) {
+        let result = prefix.clone();
+        result.add(left);
+        result.add(right);
+        list.add(result);
+        return;
     }
 
-    if (left !== right) {
-        return [left, right];
-    } else {
-        return [left];
-    }
+    //recurse left
+    let leftHead = left.shift();
+    prefix.add(leftHead);
+    weave(left, right, list, prefix)
+    prefix.pop();
+    left.unshift(leftHead);
+
+    //recurse right
+    let rightHead = right.shift();
+    prefix.add(rightHead);
+    weave(left, right, list, prefix);
+    prefix.pop();
+    right.unshift(rightHead)
 }
 
 /**
@@ -251,12 +259,20 @@ function preOrderArrays(head, arrR = [], arrL = []) {
 function BSTSequence (head) {
     if(!head) return console.log([]);
     let list = []; // list of all arrays
-    //perform pre order traversal of the tree to create initial array
-    list = preOrderArrays(head)
-    //adjacent leaves can be added in reverse order as necessary
-
-    for (let seq in list) {
-        console.log(seq);
+    //start prefix
+    let prefix = new LinkedList(head.data);
+    // recurse left and right
+    let left = BSTSequence(head.left);
+    let right = BSTSequence(head.right);
+    //weave results together to form results
+    for (let i in left) {
+        for (let j in right) {
+            let weaved = [new LinkedList()];
+            weave(i, j, weaved, prefix)
+            list.push(weaved)
+        }
     }
 
+
+    return list;
 }
